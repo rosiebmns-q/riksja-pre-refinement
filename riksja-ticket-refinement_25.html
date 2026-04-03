@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ticket check — Riksja Travel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Source+Sans+3:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F5F0E8;--cream-dark:#EAE3D5;
+  --red:#C8102E;--red-dark:#9E0B23;
+  --green:#5FAD2F;--green-bg:#EBF5E1;--green-border:#5FAD2F;
+  --white:#FFFFFF;
+  --text:#1A1008;--text-muted:#6B5E52;--text-faint:#A8998A;
+  --border:rgba(0,0,0,0.10);--border-mid:rgba(0,0,0,0.16);
+  --yellow:#FFF9C4;--yellow-border:#D4B800;
+}
+body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--cream);color:var(--text);min-height:100vh}
+
+/* HEADER */
+.site-header{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:28px;height:28px;background:var(--red);border-radius:5px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:15px;height:15px}
+.logo-name{font-family:'Playfair Display',Georgia,serif;font-size:15px;color:var(--red)}
+.logo-sub{font-size:10px;color:var(--text-faint);letter-spacing:0.07em;text-transform:uppercase}
+.header-nav{display:flex;gap:6px;align-items:center}
+.nav-btn{font-size:12px;padding:5px 12px;border-radius:5px;border:1px solid var(--border-mid);background:transparent;color:var(--text-muted);cursor:pointer;font-family:inherit;transition:all 0.12s}
+.nav-btn:hover{background:var(--cream)}
+.nav-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
+.help-btn{font-size:12px;padding:4px 9px;border-radius:5px;border:1px solid var(--border-mid);background:transparent;color:var(--text-faint);cursor:pointer;font-family:inherit}
+
+/* LAYOUT */
+.main{max-width:720px;margin:0 auto;padding:2rem 1.5rem 5rem}
+.page-header{margin-bottom:1.5rem}
+.dots{display:flex;gap:4px;margin-bottom:8px}
+.dots span{width:6px;height:6px;background:var(--red);border-radius:50%;opacity:0.6}
+.page-title{font-family:'Playfair Display',Georgia,serif;font-size:26px;color:var(--text);margin-bottom:4px}
+.page-sub{font-size:14px;color:var(--text-muted);line-height:1.5}
+
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin-bottom:10px}
+.card-label{font-size:10px;font-weight:500;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-faint);margin-bottom:10px}
+
+/* FORMS */
+label{display:block;font-size:13px;color:var(--text-muted);margin-bottom:5px;margin-top:14px}
+label:first-child{margin-top:0}
+textarea,input[type=text]{width:100%;background:var(--cream);border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:14px;font-family:'Source Sans 3',sans-serif;color:var(--text);resize:vertical;line-height:1.6;transition:border-color 0.15s,background 0.15s}
+textarea:focus,input:focus{outline:none;border-color:var(--red);background:var(--white)}
+
+/* TYPE SELECTOR */
+.type-grid{display:flex;flex-wrap:wrap;gap:6px}
+.type-btn{font-size:13px;font-family:'Source Sans 3',sans-serif;padding:5px 13px;border-radius:99px;border:1px solid var(--border-mid);background:var(--cream-dark);color:var(--text-muted);cursor:pointer;transition:all 0.12s}
+.type-btn:hover{background:var(--cream)}
+.type-btn.sel{background:var(--red);color:#fff;border-color:var(--red);font-weight:500}
+
+/* BUTTONS */
+.btn-primary{font-family:'Source Sans 3',sans-serif;font-size:14px;font-weight:500;padding:10px 22px;border-radius:7px;border:none;background:var(--red);color:#fff;cursor:pointer;transition:background 0.15s}
+.btn-primary:hover{background:var(--red-dark)}
+.btn-secondary{font-family:'Source Sans 3',sans-serif;font-size:14px;padding:9px 16px;border-radius:7px;border:1px solid var(--border-mid);background:var(--white);color:var(--text-muted);cursor:pointer;transition:background 0.15s}
+.btn-secondary:hover{background:var(--cream)}
+.btn-row{display:flex;gap:8px;margin-top:1.5rem;align-items:center;flex-wrap:wrap}
+
+/* PHASES */
+.phase{display:none}
+.phase.active{display:block}
+
+/* CSV UPLOAD ZONE */
+.csv-zone{border:2px dashed var(--border-mid);border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--cream);margin-bottom:10px}
+.csv-zone:hover,.csv-zone.drag-over{border-color:var(--red);background:#FFF8F8}
+.csv-zone-title{font-size:14px;font-weight:500;color:var(--text-muted);margin-bottom:4px}
+.csv-zone-sub{font-size:12px;color:var(--text-faint);line-height:1.5}
+.csv-how-to{background:var(--cream);border-radius:7px;padding:0.875rem 1rem;margin-top:8px;text-align:left}
+.csv-how-to-title{font-size:11px;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px}
+.csv-how-to ol{font-size:12px;color:var(--text-muted);line-height:1.8;padding-left:1.25rem}
+
+/* TICKET LIJST */
+.ticket-item{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:1rem 1.25rem;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer;transition:border-color 0.12s}
+.ticket-item:hover{border-color:var(--border-mid)}
+.ticket-item-left{flex:1;min-width:0}
+.ticket-item-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ticket-item-meta{font-size:12px;color:var(--text-faint);display:flex;align-items:center;gap:8px}
+.ticket-item-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.pill{font-size:11px;font-weight:500;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.pill-open{background:#FAECEC;color:#9B2A2A}
+.pill-partial{background:#FAF0E0;color:#7A4810}
+.pill-done{background:var(--green-bg);color:#3A6A10}
+.del-btn{font-size:11px;padding:2px 8px;border-radius:5px;border:1px solid var(--border-mid);background:transparent;color:var(--text-faint);cursor:pointer;font-family:inherit;opacity:0;transition:opacity 0.15s}
+.ticket-item:hover .del-btn{opacity:1}
+.del-btn:hover{background:#FAECEC;color:#9B2A2A;border-color:rgba(200,16,46,0.3)}
+
+/* AANVUL SCHERM */
+.vraag-block{background:var(--white);border-radius:8px;overflow:hidden;margin-bottom:10px}
+.vraag-block.req{border:1px solid rgba(200,16,46,0.25)}
+.vraag-block.opt{border:1px solid var(--border)}
+.vraag-block.answered{border-color:rgba(95,173,47,0.5)}
+.vraag-header{padding:0.875rem 1rem 0.75rem;display:flex;align-items:flex-start;gap:10px}
+.vraag-badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;white-space:nowrap;flex-shrink:0;margin-top:3px}
+.badge-req{background:#FAECEC;color:#9B2A2A}
+.badge-opt{background:var(--cream);color:var(--text-faint)}
+.badge-ans{background:var(--green-bg);color:#3A6A10}
+.vraag-body{flex:1}
+.vraag-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;line-height:1.4}
+.vraag-hint{font-size:12px;color:var(--text-faint);line-height:1.6;white-space:pre-line}
+.vraag-input{padding:0 1rem 1rem}
+.vraag-input textarea{background:var(--cream)}
+.vraag-input textarea:focus{background:var(--white)}
+
+/* OUTPUT */
+.out-section{margin-bottom:8px}
+.out-label{font-size:10px;font-weight:500;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-faint);margin-bottom:5px;display:flex;align-items:center;justify-content:space-between}
+.new-badge{font-size:9px;font-weight:500;background:var(--yellow);color:#7A6800;border:1px solid var(--yellow-border);border-radius:3px;padding:1px 5px;margin-left:6px}
+.out-content{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:1rem 1.125rem;font-size:13.5px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word}
+.out-content a{color:var(--red);text-decoration:underline}
+.highlight{background:var(--yellow);border-radius:2px;padding:0 1px}
+.copy-sm{font-size:11px;padding:2px 9px;border-radius:5px;border:1px solid var(--border-mid);background:var(--white);color:var(--text-muted);cursor:pointer;font-family:inherit;transition:all 0.12s}
+.copy-sm:hover{background:var(--red);color:#fff;border-color:var(--red)}
+
+/* OPEN VRAGEN LIJST */
+.open-ticket-card{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.open-ticket-header{padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--border)}
+.open-ticket-title{font-size:14px;font-weight:500;color:var(--text)}
+.open-ticket-meta{font-size:11px;color:var(--text-faint)}
+.open-vraag-item{padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);display:flex;gap:12px}
+.open-vraag-item:last-child{border-bottom:none}
+.open-vraag-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:5px}
+.open-vraag-content{flex:1}
+.open-vraag-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.open-vraag-hint{font-size:12px;color:var(--text-faint);line-height:1.5;white-space:pre-line}
+
+/* ONBOARDING */
+.ob-overlay{position:fixed;inset:0;background:rgba(26,16,8,0.72);z-index:200;display:flex;align-items:center;justify-content:center;padding:1.5rem}
+.ob-card{background:#fff;border-radius:14px;max-width:500px;width:100%;overflow:hidden}
+.ob-progress{display:flex;height:4px}
+.ob-bar{flex:1;background:rgba(0,0,0,0.10);transition:background 0.3s}
+.ob-bar.active{background:var(--red)}
+.ob-bar.done{background:#5FAD2F}
+.ob-body{padding:2rem}
+.ob-step{display:none}
+.ob-step.active{display:block}
+.ob-eyebrow{font-size:11px;font-weight:500;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-faint);margin-bottom:10px}
+.ob-title{font-family:'Playfair Display',Georgia,serif;font-size:22px;color:var(--text);margin-bottom:10px}
+.ob-text{font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:1.5rem}
+.ob-steps-list{background:var(--cream);border-radius:8px;padding:1rem;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:10px}
+.ob-step-row{display:flex;align-items:flex-start;gap:12px}
+.ob-num{background:var(--red);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:1px}
+.ob-step-text strong{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.ob-step-text span{font-size:12px;color:var(--text-muted)}
+.ob-nav-items{display:flex;flex-direction:column;gap:8px;margin-bottom:1.5rem}
+.ob-nav-item{background:var(--cream);border-radius:8px;padding:0.875rem 1rem;display:flex;align-items:center;gap:12px}
+.ob-nav-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0}
+.ob-nav-text strong{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.ob-nav-text span{font-size:12px;color:var(--text-muted)}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text-faint)}
+.empty-state p{font-size:14px;margin-bottom:1rem}
+
+/* FOOTER */
+.site-footer{border-top:1px solid var(--border);background:var(--white);padding:0.875rem 1.5rem;display:flex;justify-content:space-between;align-items:center}
+.site-footer span{font-size:11px;color:var(--text-faint);letter-spacing:0.06em;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<!-- ONBOARDING -->
+<div class="ob-overlay" id="ob-overlay" style="display:none">
+  <div class="ob-card">
+    <div class="ob-progress">
+      <div class="ob-bar active" id="ob-bar-0"></div>
+      <div class="ob-bar" id="ob-bar-1"></div>
+    </div>
+    <div class="ob-body">
+      <!-- Stap 1 -->
+      <div class="ob-step active" id="ob-0">
+        <div class="ob-eyebrow">Stap 1 van 2</div>
+        <h2 class="ob-title">Ticket check</h2>
+        <p class="ob-text">Dit tool helpt je tickets voor te bereiden voor de refinement-sessie met het Q42 dev team. In die sessie schatten we samen het werk in — maar daarvoor hebben we wel de juiste info van jou nodig.</p>
+        <div class="ob-steps-list">
+          <div class="ob-step-row">
+            <div class="ob-num">1</div>
+            <div class="ob-step-text">
+              <strong>Tickets importeren</strong>
+              <span>Upload een CSV-export uit Jira, of voeg tickets één voor één handmatig toe via "+ Ticket toevoegen".</span>
+            </div>
+          </div>
+          <div class="ob-step-row">
+            <div class="ob-num">2</div>
+            <div class="ob-step-text">
+              <strong>Aanvullen wat ontbreekt</strong>
+              <span>Per ticket zie je welke informatie nog mist. Je kunt tussentijds opslaan en later terugkomen.</span>
+            </div>
+          </div>
+          <div class="ob-step-row">
+            <div class="ob-num">3</div>
+            <div class="ob-step-text">
+              <strong>Ticket kopiëren naar Jira</strong>
+              <span>Het aangevulde ticket kopieer je terug naar Jira. Daarna is het klaar voor de refinement-sessie.</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary" style="width:100%" onclick="obNext()">Volgende →</button>
+      </div>
+      <!-- Stap 2 -->
+      <div class="ob-step" id="ob-1">
+        <div class="ob-eyebrow">Stap 2 van 2</div>
+        <h2 class="ob-title">Wat vul jij in?</h2>
+        <p class="ob-text">De tool vraagt je om informatie die jij als opdrachtgever kunt invullen — context, waarde en functioneel gedrag. Technische details en schattingen worden later ingevuld samen met het dev team tijdens refinement.</p>
+        <div class="ob-nav-items">
+          <div class="ob-nav-item">
+            <div class="ob-nav-icon">✍️</div>
+            <div class="ob-nav-text">
+              <strong>Wat je invult</strong>
+              <span>Wat moet er gebouwd worden, waarvoor, voor welke entiteiten (NL/DE/UK), en een link naar de huidige website als referentie.</span>
+            </div>
+          </div>
+          <div class="ob-nav-item">
+            <div class="ob-nav-icon">🔧</div>
+            <div class="ob-nav-text">
+              <strong>Wat het dev team invult</strong>
+              <span>Technische aanpak, inschatting, afhankelijkheden en test criteria — dit komt in de refinement-sessie zelf.</span>
+            </div>
+          </div>
+          <div class="ob-nav-item">
+            <div class="ob-nav-icon">❓</div>
+            <div class="ob-nav-text">
+              <strong>Open vragen</strong>
+              <span>Overzicht van alle nog ontbrekende info per ticket. Klik ? rechts bovenin om deze uitleg opnieuw te zien.</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary" style="width:100%" onclick="obDone()">Aan de slag</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="5.5" r="3" fill="white"/>
+        <path d="M2 15c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-name">Riksja Travel</div>
+      <div class="logo-sub">Ticket check</div>
+    </div>
+  </div>
+  <div class="header-nav">
+    <button class="nav-btn active" id="nav-tickets" onclick="showView('tickets')">Tickets</button>
+    <button class="nav-btn" id="nav-openvragen" onclick="showView('openvragen')">Open vragen</button>
+    <button class="help-btn" onclick="obShow()" title="Uitleg">?</button>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- ── TICKETS OVERZICHT ── -->
+  <div class="phase active" id="view-tickets">
+    <div class="page-header">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div class="dots"><span></span><span></span><span></span><span></span><span></span></div>
+          <h1 class="page-title">Tickets</h1>
+        </div>
+        <button class="btn-primary" onclick="showView('nieuw')">+ Ticket toevoegen</button>
+      </div>
+    </div>
+
+    <!-- CSV Upload -->
+    <div class="card">
+      <div class="card-label">CSV uploaden</div>
+      <div class="csv-zone" id="csv-zone" onclick="document.getElementById('csv-input').click()" ondragover="csvDragOver(event)" ondrop="csvDrop(event)" ondragleave="csvDragLeave(event)">
+        <input type="file" id="csv-input" accept=".csv" style="display:none" onchange="csvSelected(event)">
+        <div class="csv-zone-title">Sleep je Jira CSV hier of klik om te uploaden</div>
+        <div class="csv-zone-sub">Tickets die al in deze tool staan worden herkend en niet opnieuw geïmporteerd.</div>
+      </div>
+      <div class="csv-how-to">
+        <div class="csv-how-to-title">CSV exporteren uit Jira</div>
+        <p style="font-size:12px;color:var(--text-muted);line-height:1.6;">Vraag het aan <strong>Rovo</strong> (de Jira AI-assistent): <em>"Exporteer alle tickets in de backlog met status Raw als CSV"</em> — dan doet Rovo het voor je. Of exporteer handmatig via Jira → Issues → Exporteren → CSV.</p>
+      </div>
+    </div>
+
+    <!-- Import resultaat -->
+    <div id="import-result" style="display:none;font-size:13px;color:var(--green);margin-bottom:10px;padding:0.5rem 0"></div>
+
+    <!-- Ticket lijst -->
+    <div id="tickets-list"></div>
+  </div>
+
+  <!-- ── NIEUW TICKET (handmatig) ── -->
+  <div class="phase" id="view-nieuw">
+    <div class="page-header">
+      <div class="dots"><span></span><span></span><span></span><span></span><span></span></div>
+      <h1 class="page-title">Ticket toevoegen</h1>
+      <p class="page-sub">Plak de huidige ticket-inhoud vanuit Jira.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Tickettitel</div>
+      <input type="text" id="f-titel" placeholder="Productpagina | Naam van de feature" />
+    </div>
+    <div class="card">
+      <div class="card-label">Jira-link <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-faint)">(optioneel)</span></div>
+      <input type="text" id="f-jira" placeholder="https://riksjatravel.atlassian.net/browse/Q42-XXX" />
+    </div>
+    <div class="card">
+      <div class="card-label">Type</div>
+      <div class="type-grid">
+        <button class="type-btn sel" onclick="selType(this,'bestemming')">Bestemming</button>
+        <button class="type-btn" onclick="selType(this,'productpagina')">Productpagina</button>
+        <button class="type-btn" onclick="selType(this,'bouwsteenpagina')">Bouwsteenpagina</button>
+        <button class="type-btn" onclick="selType(this,'content')">Content / blog</button>
+        <button class="type-btn" onclick="selType(this,'navigatie')">Navigatie</button>
+        <button class="type-btn" onclick="selType(this,'forms')">Formulieren</button>
+        <button class="type-btn" onclick="selType(this,'integratie')">Integratie</button>
+        <button class="type-btn" onclick="selType(this,'infra')">Infra / tech</button>
+        <button class="type-btn" onclick="selType(this,'seo')">SEO / migratie</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Ticket-inhoud</div>
+      <textarea id="f-raw" rows="12" placeholder="Plak hier de huidige ticket-inhoud vanuit Jira..."></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="handmatigToevoegen()">Toevoegen →</button>
+      <button class="btn-secondary" onclick="showView('tickets')">← Terug</button>
+    </div>
+  </div>
+
+  <!-- ── TICKET BEWERKEN ── -->
+  <div class="phase" id="view-bewerken">
+    <div class="page-header">
+      <div class="dots"><span></span><span></span><span></span><span></span><span></span></div>
+      <h1 class="page-title" id="bewerk-titel-display"></h1>
+      <p class="page-sub" id="bewerk-sub"></p>
+    </div>
+
+    <!-- Beschrijving bewerken -->
+    <div class="card">
+      <div class="card-label">Beschrijving</div>
+      <textarea id="bewerk-raw" rows="10" oninput="autoSaveRaw()"></textarea>
+      <div style="font-size:11px;color:var(--text-faint);margin-top:6px">Wordt automatisch opgeslagen</div>
+    </div>
+
+    <!-- Open vragen -->
+    <div id="bewerk-vragen"></div>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="buildOutput()">Ticket genereren →</button>
+      <button class="btn-secondary" onclick="slaOpEnVolgende()">Sla op & volgende ticket</button>
+      <button class="btn-secondary" onclick="showView('tickets')">← Overzicht</button>
+    </div>
+  </div>
+
+  <!-- ── OUTPUT ── -->
+  <div class="phase" id="view-output">
+    <div class="page-header">
+      <div class="dots"><span></span><span></span><span></span><span></span><span></span></div>
+      <h1 class="page-title" id="out-titel"></h1>
+      <p class="page-sub" id="out-sub"></p>
+    </div>
+    <div class="btn-row" style="margin-top:0;margin-bottom:1.5rem">
+      <button class="btn-primary" id="copy-all-btn" onclick="copyAll()">Kopieer alles</button>
+      <span id="copy-ok" style="font-size:13px;color:var(--green);opacity:0;transition:opacity 0.2s;margin-left:4px"></span>
+      <button class="btn-secondary" onclick="showView('bewerken')">← Aanpassen</button>
+      <button class="btn-secondary" onclick="showView('tickets')">Naar overzicht</button>
+    </div>
+    <div id="out-sections"></div>
+  </div>
+
+  <!-- ── OPEN VRAGEN OVERZICHT ── -->
+  <div class="phase" id="view-openvragen">
+    <div class="page-header">
+      <div class="dots"><span></span><span></span><span></span><span></span><span></span></div>
+      <h1 class="page-title">Open vragen</h1>
+      <p class="page-sub">Alle vragen die nog beantwoord moeten worden, per ticket. Met richtlijnen hoe je ze invult.</p>
+    </div>
+    <div class="btn-row" style="margin-top:0;margin-bottom:1.5rem">
+      <button class="btn-primary" onclick="copyOpenVragen()">Kopieer lijst</button>
+      <span id="ov-ok" style="font-size:13px;color:var(--green);opacity:0;margin-left:4px;transition:opacity 0.2s"></span>
+    </div>
+    <div id="ov-container"></div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <span>Riksja Travel × Q42</span>
+  <span id="footer-count"></span>
+</footer>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────
+let selType_ = 'bestemming';
+let currentId = null;
+let plainOutput = '';
+
+// ── STORAGE ────────────────────────────────────────────────────────
+function loadTickets(){ try{return JSON.parse(localStorage.getItem('rt_v2')||'[]')}catch(e){return[]} }
+function saveTickets(t){ try{localStorage.setItem('rt_v2',JSON.stringify(t))}catch(e){} }
+function getTicket(id){ return loadTickets().find(t=>t.id===id) }
+function upsert(ticket){
+  const all=loadTickets();
+  const i=all.findIndex(t=>t.id===ticket.id);
+  if(i>=0)all[i]=ticket; else all.unshift(ticket);
+  saveTickets(all); updateFooter();
+}
+function makeId(){ return 'tk_'+Date.now()+'_'+Math.random().toString(36).slice(2,6) }
+
+// ── NAVIGATIE ──────────────────────────────────────────────────────
+function showView(id){
+  document.querySelectorAll('.phase').forEach(p=>p.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(id==='tickets'||id==='nieuw') document.getElementById('nav-tickets').classList.add('active');
+  if(id==='openvragen') document.getElementById('nav-openvragen').classList.add('active');
+  if(id==='bewerken') document.getElementById('nav-tickets').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='tickets') renderTickets();
+  if(id==='openvragen') renderOpenVragen();
+}
+
+function selType(btn,type){
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel'); selType_=type;
+}
+
+function updateFooter(){
+  const all=loadTickets();
+  const open=all.filter(t=>t.status!=='done').length;
+  const el=document.getElementById('footer-count');
+  if(el) el.textContent=open?`${open} ticket${open===1?'':'s'} open`:'';
+}
+
+// ── PARSE ──────────────────────────────────────────────────────────
+function parseRaw(text){
+  function getSect(t,...headers){
+    for(const h of headers){
+      const re=new RegExp('(?:^|\\n)[*_]*'+h+'[*_]*[:\\s]*([\\s\\S]*?)(?=\\n[*_]*(?:Korte beschrijving|Waarde|Documentatie|Technical details|Acceptance criteria|Test criteria)[*_]*[:\\s]|$)','i');
+      const m=t.match(re);
+      if(m&&m[1].trim().length>2)return m[1].trim();
+    }
+    return'';
+  }
+  const urls=[...new Set((text.match(/https?:\/\/[^\s\]|*)]+/g)||[]))];
+  return{
+    beschrijving:getSect(text,'Korte beschrijving'),
+    waarde:getSect(text,'Waarde','Zodat'),
+    documentatie:getSect(text,'Documentatie'),
+    technical:getSect(text,'Technical details','Technical detail'),
+    ac:getSect(text,'Acceptance criteria','Acceptatiecriteria'),
+    urls,
+    hasRiksjaUrl:urls.some(u=>/riksjatravel|erlebe|rickshaw/.test(u))
+  };
+}
+function isEmpty(v){ return !v||v.length<5||/^\[.*\]$/.test(v.trim()) }
+
+// ── VRAGEN DEFINITIE ───────────────────────────────────────────────
+function buildVragenDefs(parsed,raw){
+  const vragen=[];
+
+  // ── USER STORY ─────────────────────────────────────────────────
+  // Stefan kan altijd uitleggen waarom iets gebouwd moet worden
+  const firstLine=(parsed.beschrijving||raw).split('\n')
+    .map(l=>l.replace(/^[*_\-\s]+/,'').trim())
+    .find(l=>l.length>10&&!/https?:\/\//i.test(l))||'';
+  const rolMap={bestemming:'contentbeheerder',productpagina:'contentbeheerder',
+    bouwsteenpagina:'contentbeheerder',content:'redacteur',navigatie:'contentbeheerder',
+    forms:'websitebezoeker',integratie:'developer',infra:'developer',seo:'SEO-specialist'};
+  const rol=rolMap[selType_]||'contentbeheerder';
+  const shortDesc=firstLine.length>80?firstLine.slice(0,80)+'...':firstLine;
+  const storyEx=shortDesc.length>10
+    ?`Als ${rol} wil ik ${shortDesc.charAt(0).toLowerCase()+shortDesc.slice(1).replace(/\.$/,'')}, zodat [vul het voordeel in — voor de bezoeker, contentbeheerder of Riksja als bedrijf].`
+    :`Als ${rol} wil ik [wat wil je kunnen doen], zodat [wat levert het op voor de gebruiker of Riksja].`;
+
+  vragen.push({id:'userstory',req:true,
+    titel:'Wat is de waarde van deze feature? (user story)',
+    hint:`Leg in één zin uit waarom dit gebouwd moet worden — vanuit het perspectief van de gebruiker.\n\nFormaat: "Als [wie] wil ik [wat], zodat [welk voordeel]."\n\nVoorbeeld op basis van jouw beschrijving:\n"${storyEx}"\n\nJe kunt dit voorbeeld aanpassen. Het gaat erom dat duidelijk is waarvoor het gebouwd wordt — het dev team gebruikt dit als leidraad tijdens de refinement-sessie.`,
+    placeholder:storyEx
+  });
+
+  // ── LINK NAAR HUIDIGE WEBSITE ──────────────────────────────────
+  // Stefan weet welke pagina dit betreft
+  if(!parsed.hasRiksjaUrl){
+    vragen.push({id:'doc-link',req:true,
+      titel:'Link naar de huidige website',
+      hint:`Plak een link naar de pagina waar dit component nu staat, of waar het straks moet komen. Het dev team gebruikt dit als visuele referentie.\n\nZoek de pagina op via:\n• NL: https://www.riksjatravel.nl/\n• DE: https://www.erlebe.de/\n• UK: https://www.rickshawtravel.co.uk/\n\nJe kunt ook een WordPress-beheerlink toevoegen als je die hebt — die staat in je Jira-ticket of in WordPress zelf.`,
+      placeholder:'https://www.riksjatravel.nl/japan/rondreis/'
+    });
+  }
+
+  // ── BESCHRIJVING ──────────────────────────────────────────────
+  // Alleen vragen als de beschrijving erg kort of leeg is
+  const beschrijvingOk=parsed.beschrijving&&parsed.beschrijving.length>30;
+  if(!beschrijvingOk){
+    vragen.push({id:'beschrijving-extra',req:true,
+      titel:'Korte beschrijving is te summier',
+      hint:`Beschrijf wat er gebouwd of veranderd moet worden — vanuit hoe jij of de contentbeheerder het gebruikt, niet technisch.\n\nVoorbeelden van goede beschrijvingen:\n• "Onderaan een productpagina moet een uitklapbare FAQ-sectie komen waar we kunnen uitleggen hoe een rondreis aangepast kan worden."\n• "Een blog-detailpagina met dezelfde velden als een contentpagina, plus een auteur en publicatiedatum."\n\nHoe concreter, hoe makkelijker het team het kan inschatten.`,
+      placeholder:'Beschrijf wat je wilt bouwen en hoe het werkt vanuit de gebruiker...'
+    });
+  }
+
+  // ── ENTITEITEN ────────────────────────────────────────────────
+  // Stefan weet voor welke websites dit geldt
+  if(!/NL|DE|UK|alle entiteiten|alle drie|riksjatravel|erlebe|rickshaw/i.test(raw)){
+    vragen.push({id:'entiteiten',req:true,
+      titel:'Voor welke websites geldt dit?',
+      hint:`Geef aan voor welke van de drie websites dit ticket geldt:\n• NL — riksjatravel.nl\n• DE — erlebe.de\n• UK — rickshawtravel.co.uk\n\nGeldt het voor alle drie? Of alleen voor specifieke? En is er verschil in hoe het werkt per website? Dat heeft invloed op hoeveel werk het is.`,
+      placeholder:'Bijv: NL + DE + UK, zelfde gedrag — of: alleen NL, DE heeft dit niet'
+    });
+  }
+
+  // ── ACCEPTANCE CRITERIA ───────────────────────────────────────
+  // Stefan kan vanuit gebruikersperspectief aangeven wanneer iets klaar is
+  if(isEmpty(parsed.ac)){
+    vragen.push({id:'ac',req:false,
+      titel:'Wanneer is deze feature klaar voor jou?',
+      hint:`Beschrijf vanuit jouw perspectief wanneer dit goed werkt — het dev team verfijnt dit verder in de refinement-sessie.\n\nVoorbeelden:\n• De sectie is zichtbaar op de pagina als er content is ingevuld\n• Als er geen content is, zie je de sectie niet\n• Je kunt meerdere vragen toevoegen en de volgorde aanpassen\n• De sectie werkt op NL en DE websites\n\nJe hoeft dit niet technisch te omschrijven — gewoon wat jij verwacht te zien als het klaar is.`,
+      placeholder:'• De sectie toont op de pagina als er content is\n• Zonder content is de sectie niet zichtbaar'
+    });
+  }
+
+  // ── OPEN VRAGEN IN HET TICKET ZELF ───────────────────────────
+  const openLines=raw.split('\n').filter(l=>{
+    const t=l.trim();
+    return t.length>=8
+      &&!t.match(/https?:\/\//)
+      &&!t.match(/^[*_]*(documentatie|technical|acceptance|test criteria|korte beschrijving)[*_]*[:\s]/i)
+      &&/\?|checken|uitzoeken|tbd|nog te bepalen/i.test(t);
+  }).slice(0,3);
+  if(openLines.length) vragen.push({id:'open-in-ticket',req:true,
+    titel:'Er staan nog open vragen in het ticket',
+    hint:`Het ticket bevat zelf nog punten die beantwoord moeten worden:\n${openLines.map(l=>'• "'+l.trim().replace(/^[-*•]\s*/,'')+'"').join('\n')}\n\nBeantwoord wat je kunt. Wat je niet weet, bespreek je in de refinement-sessie.`,
+    placeholder:'Antwoord of toelichting...'
+  });
+
+  return vragen;
+}
+
+// ── TICKET STATUS ──────────────────────────────────────────────────
+function ticketStatus(ticket){
+  const open=(ticket.vragenDefs||[]).filter(v=>v.req&&!ticket.antwoorden?.[v.id]);
+  if(open.length===0) return 'done';
+  if(Object.keys(ticket.antwoorden||{}).length>0) return 'partial';
+  return 'open';
+}
+
+// ── CSV ────────────────────────────────────────────────────────────
+function csvDragOver(e){e.preventDefault();document.getElementById('csv-zone').classList.add('drag-over')}
+function csvDragLeave(e){document.getElementById('csv-zone').classList.remove('drag-over')}
+function csvDrop(e){e.preventDefault();csvDragLeave(e);const f=e.dataTransfer.files[0];if(f)readCsv(f)}
+function csvSelected(e){const f=e.target.files[0];if(f)readCsv(f);e.target.value=''}
+
+function readCsv(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const rows=parseCsv(e.target.result);
+    const existing=loadTickets();
+    const existingKeys=new Set(existing.map(t=>t.jiraKey).filter(Boolean));
+    // Filter: niet done, niet al geïmporteerd op basis van Issue key
+    const toImport=rows.filter(r=>{
+      const key=r['Issue key']||'';
+      const status=(r['Status']||'').toLowerCase();
+      const isDone=existing.find(t=>t.jiraKey===key&&t.status==='done');
+      if(isDone) return false; // al gerefined
+      if(key&&existingKeys.has(key)) return false; // al in tool
+      return true; // importeer
+    });
+    let imported=0;
+    toImport.forEach(row=>{
+      const key=row['Issue key']||'';
+      const title=row['Summary']||'(geen titel)';
+      const rawContent=csvToRaw(row);
+      const parsed=parseRaw(rawContent);
+      const vragenDefs=buildVragenDefs(parsed,rawContent);
+      const ticket={
+        id:makeId(),jiraKey:key,
+        titel:title,
+        jira:key?`https://riksjatravel.atlassian.net/browse/${key}`:'',
+        type:'bestemming',raw:rawContent,parsed,vragenDefs,antwoorden:{},
+        ts:Date.now(),status:'open'
+      };
+      upsert(ticket); imported++;
+    });
+    const skipped=rows.length-imported;
+    const el=document.getElementById('import-result');
+    el.style.display='block';
+    el.textContent=`✓ ${imported} ticket${imported===1?'':'s'} geïmporteerd${skipped?` — ${skipped} overgeslagen (al aanwezig of gerefined)`:''}`;
+    setTimeout(()=>el.style.display='none',5000);
+    renderTickets();
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+function parseCsv(text){
+  const lines=text.split(/\r?\n/);
+  if(!lines.length)return[];
+  const headers=splitLine(lines[0]);
+  return lines.slice(1).filter(l=>l.trim()).map(l=>{
+    const vals=splitLine(l);
+    const row={};
+    headers.forEach((h,i)=>row[h.trim()]=(vals[i]||'').trim());
+    return row;
+  }).filter(r=>r['Summary']||r['Issue key']);
+}
+
+function splitLine(line){
+  const res=[];let cur='',inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
+    else if(c===','&&!inQ){res.push(cur);cur='';}
+    else cur+=c;
+  }
+  res.push(cur);return res;
+}
+
+function csvToRaw(row){
+  const parts=[];
+  const desc=(row['Description']||'').trim();
+  if(/korte beschrijving|technical details|acceptance criteria/i.test(desc)) return desc;
+  if(desc) parts.push('Korte beschrijving:\n'+desc);
+  const ac=(row['Custom field (Acceptance criteria)']||'').trim();
+  if(ac&&ac!=='*'&&ac.length>3) parts.push('Acceptance criteria:\n'+ac);
+  return parts.join('\n\n')||desc;
+}
+
+// ── TICKETS RENDER ─────────────────────────────────────────────────
+function renderTickets(){
+  const all=loadTickets();
+  const list=document.getElementById('tickets-list');
+  if(!list)return;
+  list.innerHTML='';
+  if(!all.length){
+    list.innerHTML='<div class="empty-state"><p>Nog geen tickets. Upload een Jira CSV of voeg een ticket handmatig toe.</p></div>';
+    return;
+  }
+  all.forEach(t=>{
+    const status=ticketStatus(t);
+    const openCount=(t.vragenDefs||[]).filter(v=>v.req&&!t.antwoorden?.[v.id]).length;
+    const pill=status==='done'
+      ?'<span class="pill pill-done">✓ Ready</span>'
+      :status==='partial'
+        ?`<span class="pill pill-partial">${openCount} open</span>`
+        :`<span class="pill pill-open">${openCount} vereist</span>`;
+    const item=document.createElement('div');
+    item.className='ticket-item';
+    item.innerHTML=`
+      <div class="ticket-item-left">
+        <div class="ticket-item-title">${esc(t.titel)}</div>
+        <div class="ticket-item-meta">
+          ${t.jiraKey?`<span>${esc(t.jiraKey)}</span>`:''}
+          ${t.jira?`<a href="${esc(t.jira)}" target="_blank" onclick="event.stopPropagation()" style="color:var(--red);text-decoration:none;font-size:11px;">Jira ↗</a>`:''}
+          <span>${new Date(t.ts).toLocaleDateString('nl-NL')}</span>
+        </div>
+      </div>
+      <div class="ticket-item-right">
+        ${pill}
+        <button class="del-btn" onclick="event.stopPropagation();delTicket('${t.id}')">×</button>
+      </div>`;
+    item.onclick=()=>openTicket(t.id);
+    list.appendChild(item);
+  });
+}
+
+function delTicket(id){
+  if(!confirm('Ticket verwijderen?'))return;
+  saveTickets(loadTickets().filter(t=>t.id!==id));
+  renderTickets(); updateFooter();
+}
+
+// ── TICKET OPENEN / BEWERKEN ───────────────────────────────────────
+function openTicket(id){
+  currentId=id;
+  const ticket=getTicket(id);
+  if(!ticket)return;
+  document.getElementById('bewerk-titel-display').textContent=ticket.titel;
+  document.getElementById('bewerk-raw').value=ticket.raw||'';
+  const open=(ticket.vragenDefs||[]).filter(v=>v.req&&!ticket.antwoorden?.[v.id]).length;
+  const sub=document.getElementById('bewerk-sub');
+  if(open===0){sub.textContent='Alle verplichte vragen zijn beantwoord.';sub.style.color='var(--green)';}
+  else{sub.textContent=`${open} verplichte vraag${open===1?'':' vragen'} nog open.`;sub.style.color='var(--text-muted)';}
+  renderBewerkenVragen(ticket);
+  showView('bewerken');
+}
+
+function autoSaveRaw(){
+  if(!currentId)return;
+  const ticket=getTicket(currentId);
+  if(!ticket)return;
+  ticket.raw=document.getElementById('bewerk-raw').value;
+  // Herparse zodat vragen up-to-date zijn
+  ticket.parsed=parseRaw(ticket.raw);
+  ticket.vragenDefs=buildVragenDefs(ticket.parsed,ticket.raw);
+  upsert(ticket);
+}
+
+function renderBewerkenVragen(ticket){
+  const container=document.getElementById('bewerk-vragen');
+  container.innerHTML='';
+  const defs=ticket.vragenDefs||[];
+  if(!defs.length){
+    container.innerHTML='<div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:8px;padding:1rem;color:#3A6A10;font-size:14px;margin-bottom:10px;">✓ Ticket voldoet aan de DoR.</div>';
+    return;
+  }
+  defs.forEach(v=>{
+    const ans=ticket.antwoorden?.[v.id]||'';
+    const isAns=ans.length>2;
+    const block=document.createElement('div');
+    block.className=`vraag-block ${v.req?'req':'opt'}${isAns?' answered':''}`;
+    block.id=`vb-${v.id}`;
+    block.innerHTML=`
+      <div class="vraag-header">
+        <span class="vraag-badge ${isAns?'badge-ans':v.req?'badge-req':'badge-opt'}" id="vbadge-${v.id}">${isAns?'✓ Ingevuld':v.req?'Vereist':'Gewenst'}</span>
+        <div class="vraag-body">
+          <div class="vraag-title">${esc(v.titel)}</div>
+          <div class="vraag-hint">${esc(v.hint)}</div>
+        </div>
+      </div>
+      <div class="vraag-input">
+        <textarea id="vans-${v.id}" rows="3" placeholder="${esc(v.placeholder)}" oninput="saveAns('${v.id}')">${esc(ans)}</textarea>
+      </div>`;
+    container.appendChild(block);
+  });
+}
+
+function saveAns(vid){
+  if(!currentId)return;
+  const ticket=getTicket(currentId);
+  if(!ticket)return;
+  const val=document.getElementById('vans-'+vid)?.value.trim()||'';
+  if(!ticket.antwoorden)ticket.antwoorden={};
+  if(val)ticket.antwoorden[vid]=val; else delete ticket.antwoorden[vid];
+  // Update badge
+  const block=document.getElementById('vb-'+vid);
+  const badge=document.getElementById('vbadge-'+vid);
+  const def=(ticket.vragenDefs||[]).find(d=>d.id===vid);
+  if(val.length>2){block.classList.add('answered');badge.textContent='✓ Ingevuld';badge.className='vraag-badge badge-ans';}
+  else{block.classList.remove('answered');badge.textContent=def?.req?'Vereist':'Gewenst';badge.className='vraag-badge '+(def?.req?'badge-req':'badge-opt');}
+  ticket.status=ticketStatus(ticket);
+  upsert(ticket);
+}
+
+function slaOpEnVolgende(){
+  showView('tickets');
+}
+
+// ── HANDMATIG TOEVOEGEN ────────────────────────────────────────────
+function handmatigToevoegen(){
+  const raw=document.getElementById('f-raw').value.trim();
+  if(!raw){alert('Plak eerst een ticket.');return;}
+  const titel=document.getElementById('f-titel').value.trim()||raw.split('\n')[0].slice(0,60);
+  const jira=document.getElementById('f-jira').value.trim();
+  const jiraKey=jira.match(/browse\/([\w-]+)/)?.[1]||'';
+  const parsed=parseRaw(raw);
+  const vragenDefs=buildVragenDefs(parsed,raw);
+  const ticket={id:makeId(),jiraKey,titel,jira,type:selType_,raw,parsed,vragenDefs,antwoorden:{},ts:Date.now(),status:'open'};
+  upsert(ticket);
+  document.getElementById('f-titel').value='';
+  document.getElementById('f-jira').value='';
+  document.getElementById('f-raw').value='';
+  openTicket(ticket.id);
+}
+
+// ── OUTPUT ─────────────────────────────────────────────────────────
+function buildOutput(){
+  const ticket=getTicket(currentId);
+  if(!ticket)return;
+  // Sla huidige raw op
+  ticket.raw=document.getElementById('bewerk-raw').value;
+  ticket.parsed=parseRaw(ticket.raw);
+  const parsed=ticket.parsed;
+  const ant=ticket.antwoorden||{};
+
+  const nieuwStory=ant['userstory']||'';
+  const nieuwDoc=ant['doc-link']||'';
+  const nieuwTech=ant['technical']||'';
+  const nieuwAc=ant['ac']||'';
+  const entiteiten=ant['entiteiten']||'';
+  const afhankelijk=ant['afhankelijkheden']||'';
+
+  let docContent=parsed.documentatie||'';
+  if(nieuwDoc)docContent=docContent?docContent+'\n'+nieuwDoc:nieuwDoc;
+
+  let techContent=parsed.technical||'';
+  if(nieuwTech)techContent=techContent?techContent+'\n'+nieuwTech:nieuwTech;
+  if(entiteiten)techContent+=(techContent?'\n':'')+`• Van toepassing op: ${entiteiten}`;
+  if(afhankelijk)techContent+=(techContent?'\n':'')+`• Afhankelijkheden: ${afhankelijk}`;
+
+  const acContent=!isEmpty(parsed.ac)?parsed.ac:(nieuwAc||'(nog in te vullen)');
+  const storyContent=nieuwStory||parsed.waarde||'';
+
+  const secties=[
+    {label:'User story',content:storyContent,isNew:!!nieuwStory},
+    {label:'Korte beschrijving',content:parsed.beschrijving||ticket.raw.split('\n').slice(0,3).join('\n'),isNew:false},
+    {label:'Documentatie',content:docContent,isNew:!!nieuwDoc},
+    {label:'Technical details',content:techContent,isNew:!!nieuwTech||!!entiteiten||!!afhankelijk},
+    {label:'Acceptance criteria',content:acContent,isNew:!!nieuwAc&&isEmpty(parsed.ac)}
+  ].filter(s=>s.content);
+
+  const parts=[ticket.titel];
+  secties.forEach(s=>parts.push(`${s.label.toUpperCase()}\n${s.content}`));
+  parts.push('TEST CRITERIA\nIn te vullen door developer voor overdracht aan tester');
+  plainOutput=parts.join('\n\n');
+
+  document.getElementById('out-titel').textContent=ticket.titel;
+  const hasnew=secties.some(s=>s.isNew);
+  document.getElementById('out-sub').textContent=hasnew?'Geel = nieuw toegevoegd.':'Klaar om te kopiëren naar Jira.';
+
+  const cont=document.getElementById('out-sections');
+  cont.innerHTML='';
+  secties.forEach(s=>{
+    const w=document.createElement('div');w.className='out-section';
+    const lrow=document.createElement('div');lrow.className='out-label';
+    lrow.innerHTML=`<span>${esc(s.label)}${s.isNew?'<span class="new-badge">Nieuw</span>':''}</span>`;
+    const cb=document.createElement('button');cb.className='copy-sm';cb.textContent='Kopieer';
+    cb.onclick=()=>navigator.clipboard.writeText(s.content).then(()=>{cb.textContent='✓';cb.style.background='var(--green)';cb.style.color='#fff';setTimeout(()=>{cb.textContent='Kopieer';cb.style.background='';cb.style.color='';},1600);});
+    lrow.appendChild(cb);w.appendChild(lrow);
+    const cd=document.createElement('div');cd.className='out-content';
+    const escaped=esc(s.content).replace(/(https?:\/\/[^\s<&]+)/g,'<a href="$1" target="_blank">$1</a>');
+    cd.innerHTML=s.isNew?`<span class="highlight">${escaped}</span>`:escaped;
+    w.appendChild(cd);cont.appendChild(w);
+  });
+  cont.insertAdjacentHTML('beforeend','<div class="out-section"><div class="out-label"><span>Test criteria</span></div><div class="out-content" style="color:var(--text-faint);font-style:italic;">In te vullen door developer voor overdracht aan tester</div></div>');
+
+  ticket.status=ticketStatus(ticket);
+  upsert(ticket);
+  showView('output');
+}
+
+function copyAll(){
+  navigator.clipboard.writeText(plainOutput).then(()=>{
+    const btn=document.getElementById('copy-all-btn');btn.textContent='✓ Gekopieerd';btn.style.background='var(--green)';
+    const ok=document.getElementById('copy-ok');ok.textContent='';ok.style.opacity='1';
+    setTimeout(()=>{btn.textContent='Kopieer alles';btn.style.background='var(--red)';ok.style.opacity='0';},2500);
+  });
+}
+
+// ── OPEN VRAGEN OVERZICHT ──────────────────────────────────────────
+function renderOpenVragen(){
+  const all=loadTickets();
+  const cont=document.getElementById('ov-container');
+  cont.innerHTML='';
+  const metOpen=all.filter(t=>(t.vragenDefs||[]).some(v=>v.req&&!t.antwoorden?.[v.id]));
+  if(!metOpen.length){
+    cont.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-faint);font-size:14px;">Geen openstaande verplichte vragen. Goed bezig!</div>';
+    return;
+  }
+  metOpen.forEach(t=>{
+    const openDefs=(t.vragenDefs||[]).filter(v=>v.req&&!t.antwoorden?.[v.id]);
+    const card=document.createElement('div');card.className='open-ticket-card';
+    const header=document.createElement('div');header.className='open-ticket-header';
+    header.innerHTML=`
+      <div>
+        <div class="open-ticket-title">${esc(t.titel)}</div>
+        <div class="open-ticket-meta">${t.jiraKey?esc(t.jiraKey)+' · ':''}${openDefs.length} vraag${openDefs.length===1?'':'vragen'} open${t.jira?' · <a href="'+esc(t.jira)+'" target="_blank" onclick="event.stopPropagation()" style="color:var(--red);text-decoration:none">Jira ↗</a>':''}</div>
+      </div>
+      <button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="openTicket('${t.id}')">Bewerken →</button>`;
+    card.appendChild(header);
+    openDefs.forEach(v=>{
+      const item=document.createElement('div');item.className='open-vraag-item';
+      item.innerHTML=`
+        <div class="open-vraag-dot"></div>
+        <div class="open-vraag-content">
+          <div class="open-vraag-title">${esc(v.titel)}</div>
+          <div class="open-vraag-hint">${esc(v.hint)}</div>
+        </div>`;
+      card.appendChild(item);
+    });
+    cont.appendChild(card);
+  });
+}
+
+function copyOpenVragen(){
+  const all=loadTickets();
+  const lines=[];
+  all.filter(t=>(t.vragenDefs||[]).some(v=>v.req&&!t.antwoorden?.[v.id])).forEach(t=>{
+    const open=(t.vragenDefs||[]).filter(v=>v.req&&!t.antwoorden?.[v.id]);
+    lines.push(`${t.titel}${t.jira?' ('+t.jira+')':''}`);
+    open.forEach((v,i)=>lines.push(`  ${i+1}. ${v.titel}`));
+    lines.push('');
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>{
+    const ok=document.getElementById('ov-ok');ok.textContent='Gekopieerd ✓';ok.style.opacity='1';
+    setTimeout(()=>ok.style.opacity='0',2500);
+  });
+}
+
+// ── ONBOARDING ─────────────────────────────────────────────────────
+function obShow(){
+  document.getElementById('ob-0').classList.add('active');
+  document.getElementById('ob-1').classList.remove('active');
+  document.getElementById('ob-bar-0').className='ob-bar active';
+  document.getElementById('ob-bar-1').className='ob-bar';
+  document.getElementById('ob-overlay').style.display='flex';
+}
+function obNext(){
+  document.getElementById('ob-0').classList.remove('active');
+  document.getElementById('ob-1').classList.add('active');
+  document.getElementById('ob-bar-0').className='ob-bar done';
+  document.getElementById('ob-bar-1').className='ob-bar active';
+}
+function obDone(){
+  document.getElementById('ob-overlay').style.display='none';
+  localStorage.setItem('rt_onboarded_v1','1');
+}
+
+// ── UTILS ──────────────────────────────────────────────────────────
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// ── INIT ───────────────────────────────────────────────────────────
+window.addEventListener('load',()=>{
+  renderTickets(); updateFooter();
+  if(!localStorage.getItem('rt_onboarded_v1')) obShow();
+});
+</script>
+</body>
+</html>
